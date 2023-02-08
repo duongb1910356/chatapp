@@ -2,5 +2,5 @@
 import './products_manager.dart';
 
 void main() {
-  print(ProductsManager().items[0]);
+  print(ProductsManager().items[1]);
 }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'ui/products/products_manager.dart';
-import 'ui/products/product_detail_screen.dart';
-import './models/product.dart';
+import 'package:myshop/ui/products/product_detail_screen.dart';
+import 'package:myshop/ui/products/product_overview_screen.dart';
+import 'package:myshop/ui/products/products_manager.dart';
+// import 'ui/products/products_manager.dart';
+// import 'ui/products/product_detail_screen.dart';
+// import './models/product.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,18 +28,8 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.purple,
         ).copyWith(secondary: Colors.deepOrange),
       ),
-      home: SafeArea(
-        child: ProductDetailScreen(
-          Product(
-            id: 'p1',
-            title: 'Red Shirt',
-            description: 'A red shirt - it is pretty red!',
-            price: 29.99,
-            imageUrl:
-                'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
-            isFavorite: true,
-          ),
-        ),
+      home: const SafeArea(
+        child: ProductsOverviewScreen(),
       ),
     );
   }
