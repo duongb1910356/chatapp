@@ -49,4 +49,12 @@ class ProductsManager {
   List<Product> get favoriteItems {
     return _items.where((item) => item.isFavorite).toList();
   }
+
+  Product? findById(String id) {
+    try {
+      return _items.firstWhere((item) => item.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
 }
