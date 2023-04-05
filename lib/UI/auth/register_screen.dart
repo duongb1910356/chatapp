@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:myshop/UI/auth/login_screen.dart';
+import 'package:myshop/model/NotificationModel.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -35,6 +36,7 @@ class _RegistrationScreenState extends State<RegisterScreen> {
 
   Future<void> submitForm() async {
     _formKey.currentState!.save();
+    NotificationModel.showLoadingDialog(context, 'Đang tạo tài khoản mới...');
 
     try {
       UserCredential userCredential = await _firebaseAuth
@@ -53,8 +55,9 @@ class _RegistrationScreenState extends State<RegisterScreen> {
         'displayName': _username,
         'email': _email,
         'photoURL': photoURL,
-        'lastOnline': DateTime.now().millisecondsSinceEpoch,
-        'phone': _phoneNumber
+        'lastOnline': DateTime.now(),
+        'phone': _phoneNumber,
+        'dob': Timestamp.now(),
       };
 
       await _firebaseFireStore.collection('users').doc(userId).set(userData);
@@ -68,6 +71,7 @@ class _RegistrationScreenState extends State<RegisterScreen> {
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
     } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {

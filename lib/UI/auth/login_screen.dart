@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:myshop/UI/auth/register_screen.dart';
 import 'package:myshop/UI/home_screen.dart';
 import 'package:myshop/model/FirebaseHelper.dart';
+import 'package:myshop/model/NotificationModel.dart';
 import 'package:myshop/model/UserModel.dart';
 
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -10,6 +11,7 @@ import 'package:top_snackbar_flutter/safe_area_values.dart';
 import 'package:top_snackbar_flutter/tap_bounce_container.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import '../../model/FirebaseHelper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -23,6 +25,7 @@ class _LoginScreen extends State<LoginScreen> {
   String _email = '';
   String _password = '';
   final _auth = FirebaseAuth.instance;
+  bool _isLoggedIn = false;
 
   Future<void> submitFormLogin() async {
     User? user = await signIn();
@@ -30,6 +33,12 @@ class _LoginScreen extends State<LoginScreen> {
     if (user != null) {
       UserModel? userModel = await FirebaseHelper.getUserModelById(user.uid);
 
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('email', _email);
+      prefs.setString('password', _password);
+
+      // ignore: use_build_context_synchronously
+      Navigator.popUntil(context, (route) => route.isFirst);
       // ignore: use_build_context_synchronously
       Navigator.pushReplacement(
           context,
@@ -43,11 +52,13 @@ class _LoginScreen extends State<LoginScreen> {
 
   Future<User?> signIn() async {
     _formKey.currentState!.save();
+    NotificationModel.showLoadingDialog(context, 'Đang đăng nhập...');
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: _email, password: _password);
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
         showTopSnackBar(
@@ -95,6 +106,27 @@ class _LoginScreen extends State<LoginScreen> {
       context,
       MaterialPageRoute(builder: (context) => const RegisterScreen()),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkLoginStatus();
+  }
+
+  void checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? emailLogin = prefs.getString('email');
+    String? passwordLogin = prefs.getString('password');
+
+    setState(() {
+      _email = emailLogin!;
+      _password = passwordLogin!;
+    });
+
+    print('email LUU $_email');
+
+    submitFormLogin();
   }
 
   @override

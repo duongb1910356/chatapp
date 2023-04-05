@@ -29,12 +29,12 @@ class MyApp extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 19,
                     backgroundColor: Colors.blue))),
-        home: const LoginScreen()
-        // routes: {
-        //   '/home': (context) => const HomeScreen(),
-        //   '/chat': (context) => const ChatScreen(),
-        //}
-        );
+        // home: const LoginScreen()
+        initialRoute: '/',
+        routes: {
+          '/': (context) => const LoginScreen(),
+          '/chat': (context) => const ChatScreen(),
+        });
   }
 }
 

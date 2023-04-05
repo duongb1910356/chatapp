@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:myshop/UI/ChatRoom.dart';
+import 'package:myshop/UI/ProfileScreen.dart';
 import 'package:myshop/UI/SearchPage.dart';
 import 'package:myshop/model/ChatRoomModel.dart';
 import 'package:myshop/model/FirebaseHelper.dart';
+import 'package:myshop/model/NotificationModel.dart';
 import 'package:myshop/model/UserModel.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -28,32 +31,12 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     switch (_selectedIndex) {
-      case 2:
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Column(
-                children: [
-                  const SizedBox(
-                    width: 10,
-                    height: 10,
-                  ),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(widget.userModel.photoURL.toString())),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Text(widget.userModel.displayName.toString()),
-                ],
-              ),
-            ),
-          );
-        }));
+      case 1:
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    ProfileScreen(userModel: widget.userModel)));
         break;
     }
   }
@@ -97,29 +80,43 @@ class _HomeScreenState extends State<HomeScreen> {
                         future: FirebaseHelper.getUserModelById(memberUid[0]),
                         builder: (context, userData) {
                           if (userData.data == null) {
-                            return const Center(
-                              child: Text('Chưa có tin nhắn nào ở đây'),
+                            return const SizedBox(
+                              height: 0,
+                              width: 0,
                             );
                           } else {
                             UserModel currentUser = userData.data as UserModel;
-                            return ListTile(
-                              onTap: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return ChatRoomScreen(
-                                      currentUser: currentUser,
-                                      chatroom: chatRoomModel,
-                                      userModel: widget.userModel,
-                                      firebaseUser: widget.firebaseUser);
-                                }));
-                              },
-                              leading: CircleAvatar(
-                                backgroundImage:
-                                    NetworkImage(currentUser.photoURL!),
+                            return Card(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15)),
+                              child: ListTile(
+                                onTap: () {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return ChatRoomScreen(
+                                        currentUser: currentUser,
+                                        chatroom: chatRoomModel,
+                                        userModel: widget.userModel,
+                                        firebaseUser: widget.firebaseUser);
+                                  }));
+                                },
+                                leading: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(currentUser.photoURL!),
+                                ),
+                                title: Text(currentUser.displayName!),
+                                subtitle: Text(
+                                  chatRoomModel.lastMessage.toString(),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                                trailing: Text(
+                                  DateFormat('HH:mm:ss')
+                                      .format(currentUser.lastOnline!.toDate()),
+                                ),
                               ),
-                              title: Text(currentUser.displayName!),
-                              subtitle:
-                                  Text(chatRoomModel.lastMessage.toString()),
                             );
                           }
                         },
@@ -142,8 +139,6 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Tin nhắn'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.contact_phone), label: 'Danh bạ'),
           BottomNavigationBarItem(icon: Icon(Icons.info), label: 'Người dùng'),
         ],
         currentIndex: _selectedIndex,
