@@ -9,6 +9,8 @@ import 'package:myshop/model/ChatRoomModel.dart';
 import 'package:myshop/model/FirebaseHelper.dart';
 import 'package:myshop/model/NotificationModel.dart';
 import 'package:myshop/model/UserModel.dart';
+import 'package:myshop/provider/AuthProvider.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   final UserModel userModel;
@@ -43,9 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    bool _showConfirm = false;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tan Gau'),
+        title: const Text('ChipTalk'),
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
           IconButton(onPressed: () {}, icon: const Icon(Icons.add))
@@ -57,7 +62,8 @@ class _HomeScreenState extends State<HomeScreen> {
           child: StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection('chatrooms')
-                .where('member.${widget.userModel.uid}', isEqualTo: true)
+                .where('member.${authProvider.currentUser?.uid}',
+                    isEqualTo: true)
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
@@ -74,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       Map<String, dynamic> memberjoin = chatRoomModel.member!;
                       List<String> memberUid = memberjoin.keys.toList();
-                      memberUid.remove(widget.userModel.uid);
+                      memberUid.remove(authProvider.currentUser?.uid);
 
                       return FutureBuilder(
                         future: FirebaseHelper.getUserModelById(memberUid[0]),
@@ -86,37 +92,125 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           } else {
                             UserModel currentUser = userData.data as UserModel;
-                            return Card(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 5),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15)),
-                              child: ListTile(
+
+                            return Dismissible(
+                              key: Key(userData.data?.uid as String),
+                              direction: DismissDirection.endToStart,
+                              onDismissed: (direction) {
+                                FirebaseFirestore.instance
+                                    .collection('chatrooms')
+                                    .where(
+                                        'member.${authProvider.currentUser?.uid}',
+                                        isEqualTo: true)
+                                    .where('member.${userData.data?.uid}',
+                                        isEqualTo: true)
+                                    .get()
+                                    .then((querySnapshot) {
+                                  for (var element in querySnapshot.docs) {
+                                    element.reference.update({
+                                      'member.${userData.data?.uid}': false
+                                    });
+                                  }
+                                });
+                              },
+                              // ignore: sort_child_properties_last
+                              child: GestureDetector(
                                 onTap: () {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
                                     return ChatRoomScreen(
                                         currentUser: currentUser,
                                         chatroom: chatRoomModel,
-                                        userModel: widget.userModel,
+                                        userModel: authProvider.currentUser!,
                                         firebaseUser: widget.firebaseUser);
                                   }));
                                 },
-                                leading: CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(currentUser.photoURL!),
-                                ),
-                                title: Text(currentUser.displayName!),
-                                subtitle: Text(
-                                  chatRoomModel.lastMessage.toString(),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
-                                trailing: Text(
-                                  DateFormat('HH:mm:ss')
-                                      .format(currentUser.lastOnline!.toDate()),
+                                child: Card(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15)),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundImage:
+                                          NetworkImage(currentUser.photoURL!),
+                                    ),
+                                    title: Text(currentUser.displayName!),
+                                    subtitle: Text(
+                                      chatRoomModel.lastMessage.toString(),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                    trailing: Text(
+                                      DateFormat('HH:mm:ss').format(
+                                          currentUser.lastOnline!.toDate()),
+                                    ),
+                                  ),
                                 ),
                               ),
+                              background: Container(
+                                color: Colors.red,
+                                alignment: Alignment.centerRight,
+                                padding: const EdgeInsets.only(right: 20),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 4,
+                                ),
+                                child: const Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              confirmDismiss: (direction) {
+                                return showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Xác nhận'),
+                                        content: const Text(
+                                            'Bạn có chắc muốn xoá cuộc trò chuyện này?'),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () {
+                                                FirebaseFirestore.instance
+                                                    .collection('chatrooms')
+                                                    .where(
+                                                        'member.${authProvider.currentUser?.uid}',
+                                                        isEqualTo: true)
+                                                    .where(
+                                                        'member.${userData.data?.uid}',
+                                                        isEqualTo: true)
+                                                    .get()
+                                                    .then((querySnapshot) {
+                                                  for (var element
+                                                      in querySnapshot.docs) {
+                                                    print(
+                                                        "uid ${userData.data?.uid}");
+                                                    element.reference.update({
+                                                      'member.${authProvider.currentUser?.uid}':
+                                                          false
+                                                    });
+                                                  }
+                                                });
+
+                                                Navigator.pop(context);
+                                                setState(() {
+                                                  _showConfirm = false;
+                                                });
+                                              },
+                                              child: const Text('Có')),
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                setState(() {
+                                                  _showConfirm = false;
+                                                });
+                                              },
+                                              child: const Text('Không'))
+                                        ],
+                                      );
+                                    });
+                              },
                             );
                           }
                         },

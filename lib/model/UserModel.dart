@@ -18,6 +18,17 @@ class UserModel {
       this.dob,
       this.lastOnline});
 
+  factory UserModel.fromUserModel(UserModel obj) {
+    return UserModel(
+        uid: obj.uid,
+        displayName: obj.displayName,
+        email: obj.email,
+        photoURL: obj.photoURL,
+        phone: obj.phone,
+        dob: obj.dob,
+        lastOnline: obj.lastOnline);
+  }
+
   UserModel.fromMap(Map<String, dynamic> map) {
     uid = map['uid'];
     displayName = map['displayName'];

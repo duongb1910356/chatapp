@@ -10,6 +10,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:myshop/UI/auth/login_screen.dart';
 import 'package:myshop/model/UserModel.dart';
+import 'package:myshop/provider/AuthProvider.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   final UserModel userModel;
@@ -102,6 +105,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Thông tin người dùng'),
@@ -223,6 +228,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           backgroundColor: Colors.redAccent,
           onPressed: () async {
             await FirebaseAuth.instance.signOut();
+            authProvider.logout();
+
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.remove('email');
+            prefs.remove('password');
+
             // ignore: use_build_context_synchronously
             Navigator.popUntil(context, (route) => route.isFirst);
             // ignore: use_build_context_synchronously

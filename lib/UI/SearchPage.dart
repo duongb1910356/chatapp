@@ -26,14 +26,21 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<ChatRoomModel?> getChatRoomModel(UserModel currentUser) async {
     ChatRoomModel? chatRoom;
+
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('chatrooms')
-        .where('member.${widget.userModel.uid}', isEqualTo: true)
+        .where('member.${widget.userModel.uid}', whereIn: [true, false])
         .where('member.${currentUser.uid}', isEqualTo: true)
         .get();
 
     if (snapshot.docs.isNotEmpty) {
       print('Chatroom da ton tai');
+
+      snapshot.docs[0].reference.update({
+        'member.${widget.userModel.uid}': true,
+        'member.${currentUser.uid}': false,
+      });
+
       var docData = snapshot.docs[0].data();
       ChatRoomModel existingChatRoom =
           ChatRoomModel.fromMap(docData as Map<String, dynamic>);

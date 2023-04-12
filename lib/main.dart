@@ -4,6 +4,8 @@ import 'package:myshop/UI/auth/register_screen.dart';
 import 'package:myshop/UI/chat_screen.dart';
 import 'package:myshop/UI/home_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:myshop/provider/AuthProvider.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:uuid/uuid.dart';
 import 'package:uuid/uuid.dart';
@@ -19,22 +21,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Tan Gau',
-        theme: ThemeData(
-            appBarTheme: const AppBarTheme(
-                centerTitle: true,
-                titleTextStyle: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 19,
-                    backgroundColor: Colors.blue))),
-        // home: const LoginScreen()
-        initialRoute: '/',
-        routes: {
-          '/': (context) => const LoginScreen(),
-          '/chat': (context) => const ChatScreen(),
-        });
+    return ChangeNotifierProvider<AuthProvider>(
+      create: (_) => AuthProvider(),
+      child: MaterialApp(
+          title: 'ChipTalk',
+          theme: ThemeData(
+              appBarTheme: const AppBarTheme(
+                  centerTitle: true,
+                  titleTextStyle: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 19,
+                      backgroundColor: Colors.blue))),
+          // home: const LoginScreen()
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const LoginScreen(),
+            '/chat': (context) => const ChatScreen(),
+          }),
+    );
   }
 }
 
