@@ -5,10 +5,25 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+import '../provider/AuthProvider.dart';
+
 class FcmService {
   static final FirebaseMessaging _firebaseMessaging =
       FirebaseMessaging.instance;
   static late String? token;
+
+  Future<void> backgroundHandler(RemoteMessage message) async {
+    print("Handling a background message: ${message.toString()}");
+  }
+
+  Future<void> saveToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? uid = prefs.getString('uid');
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update({'fcmToken': FcmService.token});
+  }
 
   Future<String?> registerDevice() async {
     _firebaseMessaging.requestPermission();
@@ -26,11 +41,14 @@ class FcmService {
     //     .set({'fcmToken': fcmToken});
 
     // // Đăng ký lắng nghe các sự kiện FCM
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {});
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("remote mess : ${message.toString()}");
+    });
 
-    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    //   // Xử lý thông báo khi ứng dụng đã được mở
-    // });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      // Xử lý thông báo khi ứng dụng đã được mở
+      print("remote mess : ${message.toString()}");
+    });
 
     // FirebaseMessaging.onBackgroundMessage((RemoteMessage message) {
     //   // Xử lý thông báo khi ứng dụng đang chạy ở background
@@ -57,5 +75,10 @@ class FcmService {
     if (response.statusCode != 200) {
       throw Exception('Failed to send notification.');
     }
+  }
+
+  void _handleMessage(RemoteMessage message) async {
+    // DocumentSnapshot roomSnapshot =
+    //     await _firestore.collection('chatrooms').doc(roomId).get();
   }
 }

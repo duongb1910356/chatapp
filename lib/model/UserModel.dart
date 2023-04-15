@@ -8,6 +8,7 @@ class UserModel {
   String? phone;
   Timestamp? dob;
   Timestamp? lastOnline;
+  String? fcmToken;
 
   UserModel(
       {this.uid,
@@ -16,7 +17,8 @@ class UserModel {
       this.photoURL,
       this.phone,
       this.dob,
-      this.lastOnline});
+      this.lastOnline,
+      this.fcmToken});
 
   factory UserModel.fromUserModel(UserModel obj) {
     return UserModel(
@@ -26,7 +28,8 @@ class UserModel {
         photoURL: obj.photoURL,
         phone: obj.phone,
         dob: obj.dob,
-        lastOnline: obj.lastOnline);
+        lastOnline: obj.lastOnline,
+        fcmToken: obj.fcmToken);
   }
 
   UserModel.fromMap(Map<String, dynamic> map) {
@@ -37,6 +40,7 @@ class UserModel {
     phone = map['phone'];
     dob = map['dob'];
     lastOnline = map['lastOnline'];
+    fcmToken = map['fcmToken'];
   }
 
   Map<String, dynamic> toMap() {
@@ -47,7 +51,8 @@ class UserModel {
       'photoURL': photoURL,
       'phone': phone,
       'dob': dob,
-      'lastOnline': lastOnline
+      'lastOnline': lastOnline,
+      'fcmToken': fcmToken
     };
   }
 }

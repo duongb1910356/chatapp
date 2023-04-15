@@ -41,10 +41,11 @@ class _HomeScreenState extends State<HomeScreen> {
     super.didChangeDependencies();
 
     if (!_initialized) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? uid = prefs.getString('uid');
+      // SharedPreferences prefs = await SharedPreferences.getInstance();
+      // String? uid = prefs.getString('uid');
+      final authProvider = context.read<AuthProvider>();
       final FcmService fcmService = FcmService();
-      await fcmService.registerDevice();
+      await fcmService.saveToken();
       _initialized = true;
     }
   }

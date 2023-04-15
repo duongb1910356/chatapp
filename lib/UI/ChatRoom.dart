@@ -65,7 +65,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
       final FcmService fcmService = FcmService();
       fcmService.sendNotification(
-          FcmService.token,
+          widget.currentUser.fcmToken,
           "${widget.userModel.displayName} vừa gửi tin nhắn cho bạn",
           msg,
           widget.chatroom.chatRoomId as String);
@@ -92,6 +92,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               backgroundImage: NetworkImage(widget.currentUser.photoURL!),
             ),
             const SizedBox(width: 10),
+            // Text(widget.currentUser.displayName!)
             Text(widget.currentUser.displayName!)
           ],
         ),
