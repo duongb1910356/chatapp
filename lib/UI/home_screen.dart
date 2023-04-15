@@ -11,6 +11,9 @@ import 'package:myshop/model/NotificationModel.dart';
 import 'package:myshop/model/UserModel.dart';
 import 'package:myshop/provider/AuthProvider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../service/FmcService.dart';
 
 class HomeScreen extends StatefulWidget {
   final UserModel userModel;
@@ -26,6 +29,25 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+
+    if (!_initialized) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? uid = prefs.getString('uid');
+      final FcmService fcmService = FcmService();
+      await fcmService.registerDevice();
+      _initialized = true;
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -141,10 +163,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1,
                                     ),
-                                    trailing: Text(
-                                      DateFormat('HH:mm:ss').format(
-                                          currentUser.lastOnline!.toDate()),
-                                    ),
+                                    // trailing: Text(
+                                    //   DateFormat('HH:mm:ss').format(
+                                    //       currentUser.lastOnline!.toDate()),
+                                    // ),
                                   ),
                                 ),
                               ),
@@ -233,7 +255,8 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Tin nhắn'),
-          BottomNavigationBarItem(icon: Icon(Icons.info), label: 'Người dùng'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.account_box), label: 'Người dùng'),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

@@ -15,6 +15,8 @@ import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 
+import '../service/FmcService.dart';
+
 class ChatRoomScreen extends StatefulWidget {
   final UserModel currentUser;
   final ChatRoomModel chatroom;
@@ -60,6 +62,13 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           .collection('chatrooms')
           .doc(widget.chatroom.chatRoomId)
           .update({'lastMessage': msg});
+
+      final FcmService fcmService = FcmService();
+      fcmService.sendNotification(
+          FcmService.token,
+          "${widget.userModel.displayName} vừa gửi tin nhắn cho bạn",
+          msg,
+          widget.chatroom.chatRoomId as String);
     }
   }
 

@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:myshop/UI/auth/login_screen.dart';
 import 'package:myshop/model/NotificationModel.dart';
+import 'package:flutter/gestures.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -82,6 +83,11 @@ class _RegistrationScreenState extends State<RegisterScreen> {
     }
   }
 
+  bool agree = false;
+  void printMessage() {
+    submitForm();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,87 +101,12 @@ class _RegistrationScreenState extends State<RegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Email'),
-                // validator: (value) {
-                //   if (value == null || value.isEmpty) {
-                //     return 'Please enter an email address.';
-                //   }
-                //   return null;
-                // },
-                onSaved: (value) {
-                  _email = value!;
-                },
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Mật khẩu'),
-                obscureText: true,
-                // validator: (value) {
-                //   if (value == null || value.isEmpty) {
-                //     return 'Please enter a password.';
-                //   }
-                //   return null;
-                // },
-                onSaved: (value) {
-                  _password = value!;
-                },
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Tên người dùng'),
-                // validator: (value) {
-                //   if (value == null || value.isEmpty) {
-                //     return 'Please enter a username.';
-                //   }
-                //   return null;
-                // },
-                onSaved: (value) {
-                  _username = value!;
-                },
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Số điện thoại'),
-                // validator: (value) {
-                //   if (value == null || value.isEmpty) {
-                //     return 'Please enter a phone number.';
-                //   }
-                //   return null;
-                // },
-                onSaved: (value) {
-                  _phoneNumber = value!;
-                },
-              ),
-              const SizedBox(height: 16),
-              // Center(
-              //   child: GestureDetector(
-              //     onTap: () {
-              //       _getImage();
-              //     },
-              //     child: Container(
-              //       width: 100,
-              //       height: 100,
-              //       decoration: const BoxDecoration(
-              //         shape: BoxShape.circle,
-              //         image: DecorationImage(
-              //           image:
-              //               // _profilePicture != null
-              //               //     ? FileImage(_profilePicture)
-              //               AssetImage(
-              //                       'assets/images/default_profile_picture.jpg')
-              //                   as ImageProvider,
-              //           fit: BoxFit.cover,
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
+              const SizedBox(height: 20),
               Stack(children: <Widget>[
                 Align(
                   alignment: Alignment.center,
                   child: CircleAvatar(
-                    radius: 70,
+                    radius: 100,
                     backgroundImage: _profilePicture != null
                         ? Image.file(_profilePicture!).image
                         : const AssetImage(
@@ -199,12 +130,123 @@ class _RegistrationScreenState extends State<RegisterScreen> {
                   ),
                 )
               ]),
+              const SizedBox(height: 20),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Tên người dùng',
+                  border: OutlineInputBorder(),
+                ),
+                // validator: (value) {
+                //   if (value == null || value.isEmpty) {
+                //     return 'Please enter a username.';
+                //   }
+                //   return null;
+                // },
+                onSaved: (value) {
+                  _username = value!;
+                },
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+
+                // validator: (value) {
+                //   if (value == null || value.isEmpty) {
+                //     return 'Please enter an email address.';
+                //   }
+                //   return null;
+                // },
+                onSaved: (value) {
+                  _email = value!;
+                },
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Mật khẩu',
+                  border: OutlineInputBorder(),
+                ),
+                obscureText: true,
+                // validator: (value) {
+                //   if (value == null || value.isEmpty) {
+                //     return 'Please enter a password.';
+                //   }
+                //   return null;
+                // },
+                onSaved: (value) {
+                  _password = value!;
+                },
+              ),
+
+              const SizedBox(height: 8),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Số điện thoại',
+                  border: OutlineInputBorder(),
+                ),
+                // validator: (value) {
+                //   if (value == null || value.isEmpty) {
+                //     return 'Please enter a phone number.';
+                //   }
+                //   return null;
+                // },
+                onSaved: (value) {
+                  _phoneNumber = value!;
+                },
+              ),
+
+              // Center(
+              //   child: GestureDetector(
+              //     onTap: () {
+              //       _getImage();
+              //     },
+              //     child: Container(
+              //       width: 100,
+              //       height: 100,
+              //       decoration: const BoxDecoration(
+              //         shape: BoxShape.circle,
+              //         image: DecorationImage(
+              //           image:
+              //               // _profilePicture != null
+              //               //     ? FileImage(_profilePicture)
+              //               AssetImage(
+              //                       'assets/images/default_profile_picture.jpg')
+              //                   as ImageProvider,
+              //           fit: BoxFit.cover,
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+
+              CheckboxListTile(
+                controlAffinity: ListTileControlAffinity.leading,
+                checkColor: Colors.white,
+                value: agree,
+                onChanged: (bool? value) {
+                  setState(() {
+                    agree = value!;
+                  });
+                },
+                title: const Text(
+                  "Tôi đồng ý với các điều khoản và quyền riêng tư",
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
               const SizedBox(height: 8),
               ElevatedButton(
-                onPressed: () {
-                  submitForm();
-                },
-                child: const Text('Đăng ký'),
+                onPressed: agree ? printMessage : null,
+                //submitForm(),
+                child: const Text(
+                  'Đăng ký',
+                  style: TextStyle(fontSize: 18),
+                ),
               ),
             ],
           ),

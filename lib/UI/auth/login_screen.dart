@@ -46,6 +46,7 @@ class _LoginScreen extends State<LoginScreen> {
       authProvider?.login(userModel!);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('uid', user.uid);
       prefs.setString('email', _email);
       prefs.setString('password', _password);
 

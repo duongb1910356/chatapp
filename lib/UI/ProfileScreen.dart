@@ -111,114 +111,114 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: const Text('Thông tin người dùng'),
       ),
-      body: SafeArea(
-        child: Center(
+      body: Form(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: isUpdating
               ? const CircularProgressIndicator()
-              : Column(
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    // CircleAvatar(
-                    //   backgroundImage: NetworkImage(widget.userModel.photoURL!),
-                    //   radius: 50,
-                    // ),
-
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: _profilePicture != null
-                          ? Image.file(_profilePicture!).image
-                          : NetworkImage(widget.userModel.photoURL.toString()),
-                      child: IconButton(
-                        onPressed: _updateImage,
-                        icon: const Icon(Icons.camera_alt_outlined),
-                        iconSize: 20,
-                      ),
-                    ),
-
-                    Text(
-                      widget.userModel.email.toString(),
-                      style:
-                          const TextStyle(color: Colors.black54, fontSize: 17),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(17),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            TextFormField(
-                              initialValue:
-                                  widget.userModel.displayName.toString(),
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.person),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
-                                label: const Text('Tên hiển thị'),
-                              ),
-                              onSaved: (value) {
-                                _name = value!;
-                              },
-                            ),
-                            const SizedBox(
-                              height: 18,
-                            ),
-                            TextFormField(
-                              onTap: () {
-                                _selectDate(context);
-                              },
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.calendar_today),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
-                                label: const Text('Ngày sinh'),
-                              ),
-                              controller: TextEditingController(
-                                  text: selectedDate == null
-                                      ? DateFormat.yMd().format(
-                                          widget.userModel.dob!.toDate())
-                                      : DateFormat.yMd().format(selectedDate!)),
-                            ),
-                            const SizedBox(
-                              height: 18,
-                            ),
-                            TextFormField(
-                              initialValue: widget.userModel.phone.toString(),
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.phone_android),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
-                                label: const Text('Số điện thoại'),
-                              ),
-                              onSaved: (value) {
-                                _phone = value!;
-                              },
-                            ),
-                          ],
+              : SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      CircleAvatar(
+                        radius: 100,
+                        backgroundImage: _profilePicture != null
+                            ? Image.file(_profilePicture!).image
+                            : NetworkImage(
+                                widget.userModel.photoURL.toString()),
+                        child: IconButton(
+                          onPressed: _updateImage,
+                          icon: const Icon(Icons.camera_alt_outlined),
+                          iconSize: 20,
                         ),
                       ),
-                    ),
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        shape: const StadiumBorder(),
-                        minimumSize: const Size(50, 50),
+                      const SizedBox(
+                        height: 10,
                       ),
-                      onPressed: () {
-                        updateProfile();
-                      },
-                      icon: const Icon(Icons.edit),
-                      label: const Text(
-                        'Cập nhật',
-                        style: TextStyle(
-                          fontSize: 20,
+                      Text(
+                        widget.userModel.email.toString(),
+                        style: const TextStyle(
+                            color: Colors.black54, fontSize: 17),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(17),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                initialValue:
+                                    widget.userModel.displayName.toString(),
+                                decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.person),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  label: const Text('Tên hiển thị'),
+                                ),
+                                onSaved: (value) {
+                                  _name = value!;
+                                },
+                              ),
+                              const SizedBox(
+                                height: 18,
+                              ),
+                              TextFormField(
+                                onTap: () {
+                                  _selectDate(context);
+                                },
+                                decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.calendar_today),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  label: const Text('Ngày sinh'),
+                                ),
+                                controller: TextEditingController(
+                                    text: selectedDate == null
+                                        ? DateFormat.yMd().format(
+                                            widget.userModel.dob!.toDate())
+                                        : DateFormat.yMd()
+                                            .format(selectedDate!)),
+                              ),
+                              const SizedBox(
+                                height: 18,
+                              ),
+                              TextFormField(
+                                initialValue: widget.userModel.phone.toString(),
+                                decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.phone_android),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  label: const Text('Số điện thoại'),
+                                ),
+                                onSaved: (value) {
+                                  _phone = value!;
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          shape: const StadiumBorder(),
+                          minimumSize: const Size(50, 50),
+                        ),
+                        onPressed: () {
+                          updateProfile();
+                        },
+                        icon: const Icon(Icons.edit),
+                        label: const Text(
+                          'Cập nhật',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
         ),
       ),
